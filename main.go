@@ -7,7 +7,8 @@ var cell = `+---+
 +---+`
 
 func main() {
-	sheet.NewSheet()
+	sh := sheet.NewSheet()
+	sh.Display()
 }
 
 var design = `

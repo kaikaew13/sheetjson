@@ -1,20 +1,28 @@
 package sheet
 
+import "fmt"
+
 type Cell struct {
-	data      interface{}
-	row       int
-	col       string
-	isHeader  bool
-	isIndexer bool
+	data       interface{}
+	dataLength int
+	row        int
+	col        int
+	isHeader   bool
+	isIndexer  bool
 }
 
-func newCell(row int, col string, isHeader, isIndexer bool) *Cell {
+func newCell(data string, row int, col int, isHeader, isIndexer bool) *Cell {
 	c := &Cell{
-		data:      "ABC",
-		row:       row,
-		col:       col,
-		isHeader:  isHeader,
-		isIndexer: isIndexer,
+		data:       data,
+		dataLength: len(data),
+		row:        row,
+		col:        col,
+		isHeader:   isHeader,
+		isIndexer:  isIndexer,
+	}
+
+	if c.isIndexer {
+		c.data = fmt.Sprintf("\033[32m%s\033[0m", data)
 	}
 
 	return c
