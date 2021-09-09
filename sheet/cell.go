@@ -10,7 +10,7 @@ type Cell struct {
 
 func newCell(row int, col string, isHeader, isIndexer bool) *Cell {
 	c := &Cell{
-		data:      "-",
+		data:      "ABC",
 		row:       row,
 		col:       col,
 		isHeader:  isHeader,
