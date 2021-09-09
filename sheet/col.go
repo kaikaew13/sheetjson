@@ -1,6 +1,8 @@
 package sheet
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Col struct {
 	cells      []*Cell
@@ -8,30 +10,37 @@ type Col struct {
 	colId      string
 }
 
-func newCol(row int, colId string) *Col {
+func newCol(rows int, colId, header string, body []interface{}) *Col {
 	col := &Col{
 		colId: colId,
 	}
 
-	indexCell := newCell(colId, 1, colIDToNum(colId), false, true)
+	indexCell := newCell(colId, 0, colIDToNum(colId), false, true)
 	col.cells = append(col.cells, indexCell)
+	col.setMaxLen(indexCell.dataLen)
 
-	for i := 1; i <= row; i++ {
-		c := newCell("ABC", 1, colIDToNum(colId), true, false)
+	headerCell := newCell(header, 1, colIDToNum(colId), true, false)
+	col.cells = append(col.cells, headerCell)
+	col.setMaxLen(headerCell.dataLen)
+
+	i := 2
+	for _, b := range body {
+		c := newCell(b, i, colIDToNum(colId), false, false)
 		col.cells = append(col.cells, c)
 		col.setMaxLen(c.dataLen)
+		i++
 	}
 
 	return col
 }
 
-func newIndexCol(row int) *Col {
+func newIndexCol(rows int) *Col {
 	col := &Col{}
 
 	indexCell := newCell("", 0, 0, false, true)
 	col.cells = append(col.cells, indexCell)
 
-	for i := 1; i <= row; i++ {
+	for i := 1; i <= rows; i++ {
 		c := newCell(fmt.Sprintf("%d", i), i, 0, false, true)
 		col.cells = append(col.cells, c)
 		col.setMaxLen(c.dataLen)
@@ -49,7 +58,7 @@ func (col *Col) setMaxLen(dataLength int) {
 func colIDToNum(colId string) int {
 	n, base := 0, 1
 	for _, r := range colId {
-		n += (int(r) - A + 1) * base
+		n += (int(r) - asciiA + 1) * base
 		base *= 26
 	}
 
