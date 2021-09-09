@@ -2,20 +2,36 @@ package sheet
 
 import "fmt"
 
+const (
+	A int = 65
+
+	colorReset  string = "\033[0m"
+	colorRed    string = "\033[31m"
+	colorGreen  string = "\033[32m"
+	colorYellow string = "\033[33m"
+	colorBlue   string = "\033[34m"
+	colorPurple string = "\033[35m"
+	colorCyan   string = "\033[36m"
+	colorWhite  string = "\033[37m"
+)
+
 type Sheet struct {
 	cols []*Col
+	rows int
 	name string
 }
 
-func NewSheet() *Sheet {
+func NewSheet(name string) *Sheet {
 	sh := &Sheet{
-		name: "Default",
+		name: name,
+		rows: 5,
 	}
 
-	firstCol := newCol(5, byte('-'), true)
-	sh.cols = append(sh.cols, firstCol)
+	indexCol := newIndexCol(sh.rows)
+	sh.cols = append(sh.cols, indexCol)
+
 	for i := 0; i < 26; i++ {
-		col := newCol(5, byte(65+i), false)
+		col := newCol(sh.rows, string(rune(A+i)))
 		sh.cols = append(sh.cols, col)
 	}
 
@@ -23,67 +39,57 @@ func NewSheet() *Sheet {
 }
 
 func (sh *Sheet) Display() {
-	cols := sh.cols
+	for i := 0; i < sh.rows; i++ {
+		if i == 0 {
+			printBorder(sh.cols)
+		}
 
-	for j := 0; j < 5; j++ {
+		printData(sh.cols, i)
+		printBorder(sh.cols)
+	}
+}
+
+func printBorder(cols []*Col) {
+	for j := 0; j < len(cols); j++ {
+		s := formatBorder(cols[j].maxDataLen)
 		if j == 0 {
-			for k := 0; k < len(cols); k++ {
-				s := ""
-				for i := 0; i < (cols)[k].maxDataLength; i++ {
-					s += "-"
-				}
-				if k == 0 {
-					fmt.Printf("+-%s-+", s)
-				} else {
-					fmt.Printf("-%s-+", s)
-				}
-			}
-			fmt.Println()
-			for k := 0; k < len(cols); k++ {
-				s := (cols)[k].cells[j].dataString()
-				tmp := (cols)[k].cells[j].dataLength
-				for i := 0; i < (cols)[k].maxDataLength-tmp; i++ {
-					s += " "
-				}
-				if k == 0 {
-					fmt.Printf("| %s |", s)
-				} else {
-					fmt.Printf(" %s |", s)
-				}
-			}
-			fmt.Println()
-			for k := 0; k < len(cols); k++ {
-				s := ""
-				for i := 0; i < (cols)[k].maxDataLength; i++ {
-					s += "-"
-				}
-				if k == 0 {
-					fmt.Printf("+-%s-+", s)
-				} else {
-					fmt.Printf("-%s-+", s)
-				}
-			}
+			fmt.Printf("+-%s-+", s)
 		} else {
-			fmt.Println()
-			for k := 0; k < len(cols); k++ {
-				if k == 0 {
-					fmt.Printf("| %s |", (cols)[k].cells[j].dataString())
-				} else {
-					fmt.Printf(" %s |", (cols)[k].cells[j].dataString())
-				}
-			}
-			fmt.Println()
-			for k := 0; k < len(cols); k++ {
-				s := ""
-				for i := 0; i < (cols)[k].maxDataLength; i++ {
-					s += "-"
-				}
-				if k == 0 {
-					fmt.Printf("+-%s-+", s)
-				} else {
-					fmt.Printf("-%s-+", s)
-				}
-			}
+			fmt.Printf("-%s-+", s)
 		}
 	}
+
+	fmt.Println()
+}
+
+func printData(cols []*Col, i int) {
+	for j := 0; j < len(cols); j++ {
+		col, cell := cols[j], cols[j].cells[i]
+		s := formatPadding(cell.dataToString(), cell.dataLen, col.maxDataLen)
+		if j == 0 {
+			fmt.Printf("| %s |", s)
+		} else {
+			fmt.Printf(" %s |", s)
+		}
+	}
+
+	fmt.Println()
+}
+
+func formatBorder(maxDataLen int) string {
+	s := ""
+	for i := 0; i < maxDataLen; i++ {
+		s += "-"
+	}
+
+	return s
+}
+
+func formatPadding(data string, dataLen, maxDataLen int) string {
+	s := data
+	for i := 0; i < maxDataLen-dataLen; i++ {
+		s += " "
+	}
+
+	return s
 }

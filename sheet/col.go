@@ -3,40 +3,55 @@ package sheet
 import "fmt"
 
 type Col struct {
-	cells         []*Cell
-	maxDataLength int
-	id            string
+	cells      []*Cell
+	maxDataLen int
+	colId      string
 }
 
-func newCol(row int, colLabel byte, indexCol bool) *Col {
+func newCol(row int, colId string) *Col {
 	col := &Col{
-		id: string(colLabel),
+		colId: colId,
 	}
 
-	indexCell := newCell(string(colLabel), 1, int(colLabel)-65, false, true)
+	indexCell := newCell(colId, 1, colIDToNum(colId), false, true)
 	col.cells = append(col.cells, indexCell)
 
 	for i := 1; i <= row; i++ {
-		var c *Cell
-		if indexCol {
-			c = newCell(fmt.Sprintf("%d", i), 1, int(colLabel)-65, false, true)
-		} else {
-			c = newCell("ABC", 1, int(colLabel)-65, false, false)
-		}
+		c := newCell("ABC", 1, colIDToNum(colId), true, false)
 		col.cells = append(col.cells, c)
-		col.maxLen(c.dataLength)
+		col.setMaxLen(c.dataLen)
 	}
 
-	if col.maxDataLength == 10 {
-		for _, v := range col.cells {
-			fmt.Println(v.dataLength)
-		}
-	}
 	return col
 }
 
-func (col *Col) maxLen(dataLength int) {
-	if col.maxDataLength < dataLength {
-		col.maxDataLength = dataLength
+func newIndexCol(row int) *Col {
+	col := &Col{}
+
+	indexCell := newCell("", 0, 0, false, true)
+	col.cells = append(col.cells, indexCell)
+
+	for i := 1; i <= row; i++ {
+		c := newCell(fmt.Sprintf("%d", i), i, 0, false, true)
+		col.cells = append(col.cells, c)
+		col.setMaxLen(c.dataLen)
 	}
+
+	return col
+}
+
+func (col *Col) setMaxLen(dataLength int) {
+	if col.maxDataLen < dataLength {
+		col.maxDataLen = dataLength
+	}
+}
+
+func colIDToNum(colId string) int {
+	n, base := 0, 1
+	for _, r := range colId {
+		n += (int(r) - A + 1) * base
+		base *= 26
+	}
+
+	return n
 }
