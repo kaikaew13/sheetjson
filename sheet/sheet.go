@@ -2,8 +2,6 @@ package sheet
 
 import "fmt"
 
-const asciiA int = 65
-
 type Sheet struct {
 	cols []*Col
 	rows int
@@ -19,17 +17,12 @@ func NewSheet(name string, m map[string][]interface{}, rows int) *Sheet {
 	indexCol := newIndexCol(sh.rows)
 	sh.cols = append(sh.cols, indexCol)
 
-	i := 0
+	i := 1
 	for k, v := range m {
-		col := newCol(sh.rows, string(rune(asciiA+i)), k, v)
+		col := newCol(sh.rows, toColID(i), k, v)
 		sh.cols = append(sh.cols, col)
 		i++
 	}
-
-	// for i := 0; i < len(a[0]); i++ {
-	// 	col := newCol(sh.rows, string(rune(A+i)))
-	// 	sh.cols = append(sh.cols, col)
-	// }
 
 	return sh
 }
@@ -37,17 +30,17 @@ func NewSheet(name string, m map[string][]interface{}, rows int) *Sheet {
 func (sh *Sheet) Display() {
 	for i := 0; i <= sh.rows; i++ {
 		if i == 0 {
-			printBorder(sh.cols)
+			sh.printBorder()
 		}
 
-		printData(sh.cols, i)
-		printBorder(sh.cols)
+		sh.printData(i)
+		sh.printBorder()
 	}
 }
 
-func printBorder(cols []*Col) {
-	for j := 0; j < len(cols); j++ {
-		s := fmtBorder(cols[j].maxDataLen)
+func (sh *Sheet) printBorder() {
+	for j := 0; j < len(sh.cols); j++ {
+		s := fmtBorder(sh.cols[j].maxDataLen)
 		if j == 0 {
 			fmt.Printf("+-%s-+", s)
 		} else {
@@ -58,9 +51,9 @@ func printBorder(cols []*Col) {
 	fmt.Println()
 }
 
-func printData(cols []*Col, i int) {
-	for j := 0; j < len(cols); j++ {
-		col, cell := cols[j], cols[j].cells[i]
+func (sh *Sheet) printData(i int) {
+	for j := 0; j < len(sh.cols); j++ {
+		col, cell := sh.cols[j], sh.cols[j].cells[i]
 		s := fmtPadding(cell.data.String(), cell.data.dLen, col.maxDataLen)
 		if j == 0 {
 			fmt.Printf("| %s |", s)
