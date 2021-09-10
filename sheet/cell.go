@@ -22,53 +22,47 @@ const (
 )
 
 type Cell struct {
-	data      interface{}
-	dataType  string
-	dataLen   int
+	data      *Data
 	row       int
 	col       int
 	isHeader  bool
 	isIndexer bool
 }
 
-func newCell(data interface{}, row, col int, isHeader, isIndexer bool) *Cell {
+type Data struct {
+	d     interface{}
+	dType string
+	dLen  int
+}
+
+func (d *Data) String() string {
+	return fmt.Sprintf("%v", d.d)
+}
+
+func newCell(d interface{}, row, col int, isHeader, isIndexer bool) *Cell {
+	dt := Data{
+		d: d,
+	}
+	dt.dLen = len(dt.String())
+	dt.dType = getDataType(dt.d)
+
 	c := &Cell{
-		data:      data,
-		dataType:  getDataType(data),
+		data:      &dt,
 		row:       row,
 		col:       col,
 		isHeader:  isHeader,
 		isIndexer: isIndexer,
 	}
-	c.dataLen = len(c.String())
 
-	if c.dataType == stringType {
-		if len(c.String()) > maxLen {
-			c.data = c.String()[:maxLen-3] + "..."
-			c.dataLen = maxLen
-		}
-	} else if c.dataType == numberType {
-		if len(c.String()) > maxLen {
-			c.data = c.String()[:maxLen]
-			c.dataLen = maxLen
-		}
-		c.data = fmt.Sprintf("%s%s%s", colorYellow, c.String(), colorReset)
-	} else if c.dataType == otherType {
-		c.data = fmt.Sprintf("%s%s%s", colorPurple, nestedJSON, colorReset)
-		c.dataLen = len(nestedJSON)
-	}
+	c.fmtData()
 
 	if c.isIndexer {
-		c.data = fmt.Sprintf("%s%s%s", colorGreen, c.String(), colorReset)
+		c.data.d = fmt.Sprintf("%s%s%s", colorGreen, c.data.String(), colorReset)
 	} else if c.isHeader {
-		c.data = fmt.Sprintf("%s%s%s", colorBlue, c.String(), colorReset)
+		c.data.d = fmt.Sprintf("%s%s%s", colorCyan, c.data.String(), colorReset)
 	}
 
 	return c
-}
-
-func (c *Cell) String() string {
-	return fmt.Sprintf("%v", c.data)
 }
 
 func getDataType(data interface{}) string {
@@ -79,5 +73,24 @@ func getDataType(data interface{}) string {
 		return numberType
 	default:
 		return otherType
+	}
+}
+
+func (c *Cell) fmtData() {
+	switch c.data.dType {
+	case stringType:
+		if c.data.dLen > maxLen {
+			c.data.d = c.data.String()[:maxLen-3] + "..."
+			c.data.dLen = maxLen
+		}
+	case numberType:
+		if c.data.dLen > maxLen {
+			c.data.d = c.data.String()[:maxLen]
+			c.data.dLen = maxLen
+		}
+		c.data.d = fmt.Sprintf("%s%s%s", colorYellow, c.data.String(), colorReset)
+	case otherType:
+		c.data.d = fmt.Sprintf("%s%s%s", colorPurple, nestedJSON, colorReset)
+		c.data.dLen = len(nestedJSON)
 	}
 }

@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	f, err := os.Open("example.json")
+	f, err := os.Open("ex2.json")
 	if err != nil {
 		log.Fatalln("fail to open")
 	}

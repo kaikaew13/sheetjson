@@ -17,17 +17,17 @@ func newCol(rows int, colId, header string, body []interface{}) *Col {
 
 	indexCell := newCell(colId, 0, colIDToNum(colId), false, true)
 	col.cells = append(col.cells, indexCell)
-	col.setMaxLen(indexCell.dataLen)
+	col.setMaxLen(indexCell.data.dLen)
 
 	headerCell := newCell(header, 1, colIDToNum(colId), true, false)
 	col.cells = append(col.cells, headerCell)
-	col.setMaxLen(headerCell.dataLen)
+	col.setMaxLen(headerCell.data.dLen)
 
 	i := 2
 	for _, b := range body {
 		c := newCell(b, i, colIDToNum(colId), false, false)
 		col.cells = append(col.cells, c)
-		col.setMaxLen(c.dataLen)
+		col.setMaxLen(c.data.dLen)
 		i++
 	}
 
@@ -43,7 +43,7 @@ func newIndexCol(rows int) *Col {
 	for i := 1; i <= rows; i++ {
 		c := newCell(fmt.Sprintf("%d", i), i, 0, false, true)
 		col.cells = append(col.cells, c)
-		col.setMaxLen(c.dataLen)
+		col.setMaxLen(c.data.dLen)
 	}
 
 	return col

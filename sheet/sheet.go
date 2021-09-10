@@ -47,7 +47,7 @@ func (sh *Sheet) Display() {
 
 func printBorder(cols []*Col) {
 	for j := 0; j < len(cols); j++ {
-		s := formatBorder(cols[j].maxDataLen)
+		s := fmtBorder(cols[j].maxDataLen)
 		if j == 0 {
 			fmt.Printf("+-%s-+", s)
 		} else {
@@ -61,7 +61,7 @@ func printBorder(cols []*Col) {
 func printData(cols []*Col, i int) {
 	for j := 0; j < len(cols); j++ {
 		col, cell := cols[j], cols[j].cells[i]
-		s := formatPadding(cell.String(), cell.dataLen, col.maxDataLen)
+		s := fmtPadding(cell.data.String(), cell.data.dLen, col.maxDataLen)
 		if j == 0 {
 			fmt.Printf("| %s |", s)
 		} else {
@@ -72,7 +72,7 @@ func printData(cols []*Col, i int) {
 	fmt.Println()
 }
 
-func formatBorder(maxDataLen int) string {
+func fmtBorder(maxDataLen int) string {
 	s := ""
 	for i := 0; i < maxDataLen; i++ {
 		s += "-"
@@ -81,7 +81,7 @@ func formatBorder(maxDataLen int) string {
 	return s
 }
 
-func formatPadding(data string, dataLen, maxDataLen int) string {
+func fmtPadding(data string, dataLen, maxDataLen int) string {
 	s := data
 	for i := 0; i < maxDataLen-dataLen; i++ {
 		s += " "
