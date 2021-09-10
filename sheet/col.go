@@ -5,8 +5,8 @@ import (
 )
 
 const (
-	asciiA       int = 65
-	noOfAlphabet int = 26
+	asciiA        int = 65
+	noOfAlphabets int = 26
 )
 
 type Col struct {
@@ -20,19 +20,19 @@ func newCol(rows int, colID, header string, body []interface{}) *Col {
 		colID: colID,
 	}
 
-	indexCell := newCell(colID, 0, colIDToNum(colID), false, true)
+	indexCell := newCell(colID, 0, colIDToInt(colID), false, true)
 	col.cells = append(col.cells, indexCell)
-	col.setMaxLen(indexCell.data.dLen)
+	col.setColLen(indexCell.data.dLen)
 
-	headerCell := newCell(header, 1, colIDToNum(colID), true, false)
+	headerCell := newCell(header, 1, colIDToInt(colID), true, false)
 	col.cells = append(col.cells, headerCell)
-	col.setMaxLen(headerCell.data.dLen)
+	col.setColLen(headerCell.data.dLen)
 
 	i := 2
 	for _, b := range body {
-		c := newCell(b, i, colIDToNum(colID), false, false)
+		c := newCell(b, i, colIDToInt(colID), false, false)
 		col.cells = append(col.cells, c)
-		col.setMaxLen(c.data.dLen)
+		col.setColLen(c.data.dLen)
 		i++
 	}
 
@@ -48,46 +48,56 @@ func newIndexCol(rows int) *Col {
 	for i := 1; i <= rows; i++ {
 		c := newCell(fmt.Sprintf("%d", i), i, 0, false, true)
 		col.cells = append(col.cells, c)
-		col.setMaxLen(c.data.dLen)
+		col.setColLen(c.data.dLen)
 	}
 
 	return col
 }
 
-func (col *Col) setMaxLen(dataLength int) {
+func (col *Col) setColLen(dataLength int) {
 	if col.maxDataLen < dataLength {
 		col.maxDataLen = dataLength
 	}
 }
 
-func colIDToNum(colID string) int {
+// A == 1, 2 == B, ..., 27 == AA
+// like in the spreadsheet
+func colIDToInt(colID string) int {
+	colID = reverseString(colID)
+
 	n, base := 0, 1
 	for _, r := range colID {
 		n += (int(r) - asciiA + 1) * base
-		base *= noOfAlphabet
+		base *= noOfAlphabets
 	}
 
 	return n
 }
 
-// 1 = A, 2 = B, ..., 27 = AA
+// 1 == A, 2 == B, ..., 27 == AA
 // like in the spreadsheet
-func toColID(n int) string {
-	s := []byte{}
+func intToColID(n int) string {
+	s := ""
 	for n > 0 {
-		r := (n - 1) % noOfAlphabet
-		s = append(s, byte(asciiA+r))
-		if (n % noOfAlphabet) == 0 {
+		r := (n - 1) % noOfAlphabets
+		s += string(byte(asciiA + r))
+		if (n % noOfAlphabets) == 0 {
 			n /= 26
 			n--
 		} else {
-			n /= noOfAlphabet
+			n /= noOfAlphabets
 		}
 	}
 
-	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
-		s[i], s[j] = s[j], s[i]
+	return reverseString(s)
+}
+
+func reverseString(s string) string {
+	b := []byte(s)
+
+	for i, j := 0, len(b)-1; i < j; i, j = i+1, j-1 {
+		b[i], b[j] = b[j], b[i]
 	}
 
-	return string(s)
+	return string(b)
 }

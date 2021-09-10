@@ -9,7 +9,7 @@ const (
 
 	nestedJSON string = "<nested>"
 
-	maxLen int = 25
+	maxCellLen int = 25
 
 	colorReset  string = "\033[0m"
 	colorRed    string = "\033[31m"
@@ -79,14 +79,14 @@ func getDataType(data interface{}) string {
 func (c *Cell) fmtData() {
 	switch c.data.dType {
 	case stringType:
-		if c.data.dLen > maxLen {
-			c.data.d = c.data.String()[:maxLen-3] + "..."
-			c.data.dLen = maxLen
+		if c.data.dLen > maxCellLen {
+			c.data.d = c.data.String()[:maxCellLen-3] + "..."
+			c.data.dLen = maxCellLen
 		}
 	case numberType:
-		if c.data.dLen > maxLen {
-			c.data.d = c.data.String()[:maxLen]
-			c.data.dLen = maxLen
+		if c.data.dLen > maxCellLen {
+			c.data.d = c.data.String()[:maxCellLen]
+			c.data.dLen = maxCellLen
 		}
 		c.data.d = fmt.Sprintf("%s%s%s", colorYellow, c.data.String(), colorReset)
 	case otherType:
