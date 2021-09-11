@@ -9,7 +9,17 @@ import (
 )
 
 func main() {
-	f, err := os.Open("ex2.json")
+	if len(os.Args) != 2 {
+		log.Fatalln("need to provide json file as second arg")
+	}
+
+	fileName := os.Args[1]
+
+	if fileName[len(fileName)-4:] != "json" {
+		log.Fatalln("require to be json file")
+	}
+
+	f, err := os.Open(fileName)
 	if err != nil {
 		log.Fatalln("fail to open file")
 	}

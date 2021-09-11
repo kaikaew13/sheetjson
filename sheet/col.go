@@ -28,12 +28,10 @@ func newCol(rows int, colID, header string, body []interface{}) *Col {
 	col.cells = append(col.cells, headerCell)
 	col.setColLen(headerCell.data.dLen)
 
-	i := 2
-	for _, b := range body {
-		c := newCell(b, i, colIDToInt(colID), false, false)
+	for i, b := range body {
+		c := newCell(b, i+2, colIDToInt(colID), false, false)
 		col.cells = append(col.cells, c)
 		col.setColLen(c.data.dLen)
-		i++
 	}
 
 	return col

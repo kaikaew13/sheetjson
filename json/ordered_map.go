@@ -10,26 +10,26 @@ type OrderedMap struct {
 }
 
 type Iterator struct {
-	cur      int
+	i        int
 	iterable []string
 }
 
 func newIterator(iterable []string) *Iterator {
 	it := &Iterator{
 		iterable: iterable,
-		cur:      0,
+		i:        0,
 	}
 
 	return it
 }
 
-func (it *Iterator) Next() (cur string, ok bool) {
-	if it.cur == len(it.iterable) {
+func (it *Iterator) Next() (key string, ok bool) {
+	if it.i == len(it.iterable) {
 		return
 	}
 
-	tmp := it.iterable[it.cur]
-	it.cur++
+	tmp := it.iterable[it.i]
+	it.i++
 	return tmp, true
 }
 
