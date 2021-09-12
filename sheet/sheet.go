@@ -39,7 +39,7 @@ func (sh *Sheet) Display(maxX, maxY int) {
 	fmt.Printf("sheet name: %s\n\n", sh.name)
 	for i, lines := 0, 4; i <= sh.rows; i++ {
 		if lines >= maxY {
-			fmt.Printf("%d more rows...\n", sh.rows-i)
+			fmt.Printf("%d more rows...\n", sh.rows-i+1)
 			break
 		}
 
@@ -55,7 +55,8 @@ func (sh *Sheet) Display(maxX, maxY int) {
 }
 
 func (sh *Sheet) printBorder(maxX int) {
-	for j, chars := 0, 4; j < len(sh.cols); j++ {
+	for j, chars := 0, 5; j < len(sh.cols); j++ {
+		chars += 3 + sh.cols[j].maxDataLen
 		if chars >= maxX {
 			break
 		}
@@ -66,15 +67,14 @@ func (sh *Sheet) printBorder(maxX int) {
 		} else {
 			fmt.Printf("-%s-+", s)
 		}
-
-		chars += 4 + sh.cols[j].maxDataLen
 	}
 
 	fmt.Println()
 }
 
 func (sh *Sheet) printData(i, maxX int) {
-	for j, chars := 0, 4; j < len(sh.cols); j++ {
+	for j, chars := 0, 5; j < len(sh.cols); j++ {
+		chars += 3 + sh.cols[j].maxDataLen
 		if chars >= maxX {
 			break
 		}
@@ -86,8 +86,6 @@ func (sh *Sheet) printData(i, maxX int) {
 		} else {
 			fmt.Printf(" %s |", s)
 		}
-
-		chars += 4 + sh.cols[j].maxDataLen
 	}
 
 	fmt.Println()
