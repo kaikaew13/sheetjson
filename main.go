@@ -6,9 +6,20 @@ import (
 
 	"github.com/kaikaew13/sheetjson/json"
 	"github.com/kaikaew13/sheetjson/sheet"
+	"golang.org/x/term"
+)
+
+var (
+	terminalWidth  int
+	terminalHeight int
 )
 
 func main() {
+	terminalWidth, terminalHeight, err := term.GetSize(int(os.Stdin.Fd()))
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	if len(os.Args) != 2 {
 		log.Fatalln("need to provide json file as second arg")
 	}
@@ -31,5 +42,5 @@ func main() {
 	}
 
 	sh := sheet.NewSheet("Testing", om)
-	sh.Display()
+	sh.Display(terminalWidth, terminalHeight)
 }

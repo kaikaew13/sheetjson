@@ -35,33 +35,50 @@ func NewSheet(name string, om *json.OrderedMap) *Sheet {
 	return sh
 }
 
-func (sh *Sheet) Display() {
+func (sh *Sheet) Display(maxX, maxY int) {
 	fmt.Printf("sheet name: %s\n\n", sh.name)
-	for i := 0; i <= sh.rows; i++ {
-		if i == 0 {
-			sh.printBorder()
+	for i, lines := 0, 4; i <= sh.rows; i++ {
+		if lines >= maxY {
+			fmt.Printf("%d more rows...\n", sh.rows-i)
+			break
 		}
 
-		sh.printData(i)
-		sh.printBorder()
+		if i == 0 {
+			sh.printBorder(maxX)
+			lines++
+		}
+
+		sh.printData(i, maxX)
+		sh.printBorder(maxX)
+		lines += 2
 	}
 }
 
-func (sh *Sheet) printBorder() {
-	for j := 0; j < len(sh.cols); j++ {
+func (sh *Sheet) printBorder(maxX int) {
+	for j, chars := 0, 4; j < len(sh.cols); j++ {
+		if chars >= maxX {
+			break
+		}
+
 		s := fmtBorder(sh.cols[j].maxDataLen)
 		if j == 0 {
 			fmt.Printf("+-%s-+", s)
 		} else {
 			fmt.Printf("-%s-+", s)
 		}
+
+		chars += 4 + sh.cols[j].maxDataLen
 	}
 
 	fmt.Println()
 }
 
-func (sh *Sheet) printData(i int) {
-	for j := 0; j < len(sh.cols); j++ {
+func (sh *Sheet) printData(i, maxX int) {
+	for j, chars := 0, 4; j < len(sh.cols); j++ {
+		if chars >= maxX {
+			break
+		}
+
 		col, cell := sh.cols[j], sh.cols[j].cells[i]
 		s := fmtPadding(cell.data.String(), cell.data.dLen, col.maxDataLen)
 		if j == 0 {
@@ -69,6 +86,8 @@ func (sh *Sheet) printData(i int) {
 		} else {
 			fmt.Printf(" %s |", s)
 		}
+
+		chars += 4 + sh.cols[j].maxDataLen
 	}
 
 	fmt.Println()
